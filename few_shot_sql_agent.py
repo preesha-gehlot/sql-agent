@@ -59,7 +59,7 @@ def get_examples(db_name: str) -> list:
             "query": "SELECT * FROM Customer WHERE country = 'USA';"
         },
         {
-            "input": "Get all products that cost more than $20",
+            "input": "Get all products that cost more than 20",
             "query": "SELECT * FROM Product WHERE unitPrice > 20;"
         },
         {
