@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Query
-from pydantic import BaseModel
+from request_models import QueryRequest
 from langchain_community.utilities import SQLDatabase
 from langchain_community.agent_toolkits import create_sql_agent
 from langchain_ollama import OllamaLLM
@@ -124,13 +124,9 @@ def get_examples(db_name: str) -> list:
 # Create the API
 app = FastAPI()
 
-# Define the request model
-class QuestionRequest(BaseModel):
-    question: str
-
 # context is just a string that contains either 'retail or claims'
 @app.post("/agent/ask")
-async def ask_question(request: QuestionRequest, context: str = Query(...)):
+async def ask_question(request: QueryRequest, context: str = Query(...)):
     db_uri = get_db_uri(context)
     db = SQLDatabase.from_uri(db_uri)
 
@@ -191,7 +187,7 @@ async def ask_question(request: QuestionRequest, context: str = Query(...)):
     llm = ChatOpenAI(model_name="gpt-4o", temperature=0)
     agent_executor = create_sql_agent(llm=llm, db=db, prompt=prompt, agent_type="openai-tools", verbose=True, handle_parsing_errors=True, max_iterations=10)
 
-    response = await agent_executor.ainvoke({"input": request.question})
+    response = await agent_executor.ainvoke({"input": request.query})
     return {"response": response}
 
 if __name__ == "__main__":

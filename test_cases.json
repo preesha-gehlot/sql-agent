@@ -1,0 +1,10 @@
+{
+  "test_cases": [
+    {
+      "id": "test_001",
+      "query": "Give the name of the employee that is CEO of the company.",
+      "ground_truth": "The CEO is Sara Davis.",
+      "description": "Query to find the CEO of the company"
+    }
+  ]
+}

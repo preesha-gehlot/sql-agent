@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Query
-from pydantic import BaseModel
+from request_models import QueryRequest
 from langchain_community.utilities import SQLDatabase
 from langchain_community.agent_toolkits import create_sql_agent
 from langchain_ollama import OllamaLLM
@@ -24,36 +24,25 @@ def get_db_uri(db_name: str) -> str:
 # Create the API
 app = FastAPI()
 
-# Define the request model
-class QuestionRequest(BaseModel):
-    question: str
-
 @app.post("/agent/ask")
-async def ask_question(request: QuestionRequest, context: str = Query(...)):
-    try:
-        db_uri = get_db_uri(context)
-        db = SQLDatabase.from_uri(db_uri)
+async def ask_question(request: QueryRequest, context: str = Query(...)):
+    db_uri = get_db_uri(context)
+    db = SQLDatabase.from_uri(db_uri)
 
-        # llm = OllamaLLM(model="gemma3:latest", temperature=0, streaming=False)
-        llm = ChatOpenAI(model_name="gpt-4o")
-        agent_executor = create_sql_agent(
-            llm=llm,
-            db=db,
-            agent_type="zero-shot-react-description",
-            verbose=True,
-            handle_parsing_errors=True,
-            max_iterations=10
-        )
+    # llm = OllamaLLM(model="gemma3:latest", temperature=0, streaming=False)
+    llm = ChatOpenAI(model_name="gpt-4o")
+    agent_executor = create_sql_agent(
+        llm=llm,
+        db=db,
+        agent_type="zero-shot-react-description",
+        verbose=True,
+        handle_parsing_errors=True,
+        max_iterations=10
+    )
 
-        response = await agent_executor.ainvoke(request.question)
-        if "error" in response['output'].lower(): # Check if the agent encountered a SQL error
-           response = {
-                "error": "This is out of context for me or i am trained not to respond to this. Please try again with a different question."
-            }
-        return {"response": response}
+    response = await agent_executor.ainvoke(request.query)
     
-    except ValueError as e:
-        return {"error": str(e)}
+    return {"response": response}
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=9000)
