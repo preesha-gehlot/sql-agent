@@ -23,8 +23,8 @@ os.environ["OPENAI_API_KEY"] = "sk-proj-_H6q0J-y66wjH-pvSnh8VO4acKFUw_-D5c_m7j7T
 
 # Define database URIs
 DATABASES = {
-    "retail": "mysql+pymysql://retail-store:retail-store@35.246.67.116:3306/RetailStore",
-    "claims": "mysql+pymysql://claims:claims@35.246.67.116:3306/claims"
+    "retail": "mysql+pymysql://retail_user:retail_password@localhost:3306/retail_store",
+    "claims": "mysql+pymysql://claims_user:claims_password@localhost:3306/claims"
 }
 
 def get_db_uri(db_name: str) -> str:
@@ -133,15 +133,22 @@ async def ask_question(request: QuestionRequest, context: str = Query(...)):
         input_keys=["input"],
     )
 
-    system_prefix = """You are an intelligent agent designed to interact with a SQL database. Your goal is to understand the user's question and generate a syntactically correct MySQL query to retrieve the relevant information.
+    system_prefix = """You are a MySQL database agent. You MUST follow this exact process:
 
-Even if the user's question is not directly covered by the examples provided, you should use your understanding of the database schema, the English language, and the principles of SQL to formulate an appropriate SQLquery.
+        STEP 1: Find all the available tables in the database
+        STEP 2: Find the schema for ALL potentially relevant tables to see exact column names  
+        STEP 3: Write your data query using the verified column names
+        STEP 4: Execute the query and return the results
 
-Consider the available tables and their columns to determine what information is needed to answer the question. Only query for the specific columns that are relevant to the user's request. Limit your queries to at most 10 results unless explicitly asked for more.
+        DO NOT attempt any SELECT queries until you have completed steps 1 and 2.
 
-If you are unsure how to answer the question based on the database schema or if the question is completely unrelated, truthfully respond with "I can only answer anything related to Claims or Retail".
+        Rules:
+        - NEVER GUESS table or column names
+        - Limit results to 10 unless asked for more (i.e. asked to ignore the 10 result limit)
+        - Use proper MySQL syntax
+        - If question is unrelated to database, respond: "I can only answer anything related to Claims or Retail"
 
-Here are some examples of user inputs and their corresponding SQL queries to guide your understanding:"""
+        Here are some examples of data queries (step 3) on this database:"""
 
     # takes the top similar examples and converts them into prompts by using 
     # the input and the query fields in the example to create few shot prompts 
@@ -152,7 +159,7 @@ Here are some examples of user inputs and their corresponding SQL queries to gui
         ),
         input_variables=["input", "dialect", "top_k"],
         prefix=system_prefix,
-        suffix="",
+        suffix="Now, remember to follow the mandatory process (STEP 1-3) and answer the following question:",
     )
 
     # SystemMessagePromptTemplate sets up system instructions for the agent, 
@@ -166,7 +173,7 @@ Here are some examples of user inputs and their corresponding SQL queries to gui
         ]
     )
 
-    llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0)
+    llm = ChatOpenAI(model_name="gpt-4o", temperature=0)
     agent_executor = create_sql_agent(llm=llm, db=db, prompt=prompt, agent_type="openai-tools", verbose=True, handle_parsing_errors=True, max_iterations=10)
 
     response = await agent_executor.ainvoke({"input": request.question})

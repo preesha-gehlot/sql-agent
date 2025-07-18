@@ -1,3 +1,7 @@
+from fastapi import FastAPI
+from pydantic import BaseModel
+from typing import Optional
+
 from google.adk.agents import Agent
 from google.adk.runners import Runner
 from google.adk.models.lite_llm import LiteLlm
@@ -15,15 +19,23 @@ os.environ["OPENAI_API_KEY"] = "sk-proj-_H6q0J-y66wjH-pvSnh8VO4acKFUw_-D5c_m7j7T
 MODEL_GEMINI_PRO = "gemini-2.5-pro"
 MODEL_GPT_4O = "openai/gpt-4o"
 
+app = FastAPI()
+
+# Initialize services
+session_service = InMemorySessionService()
+artifact_service = InMemoryArtifactService()
+
+class QueryRequest(BaseModel):
+    question: str
+    context: Optional[str] = "all"
+
 async def create_agent_with_toolset(context):
     toolset_mapping = {
-        'retail': 'retail-tools',
-        'claims': 'claims_tools',
-        'all': 'all_tools'
+        'northwind': 'northwind_db_tools'
     }
     
     if context not in toolset_mapping:
-        raise ValueError(f"Invalid context: {context}. Must be 'retail', 'claims', or 'all'")
+        raise ValueError(f"Invalid context: {context}. Must be 'northwind'")
     
     toolset_name = toolset_mapping[context]
     toolbox = ToolboxSyncClient("http://127.0.0.1:5000")
@@ -31,12 +43,12 @@ async def create_agent_with_toolset(context):
     toolset = toolbox.load_toolset(toolset_name)
 
     prompt = """
-    You are an intelligent agent designed to interact with a SQL database. Your goal is to understand the user's question, generate an SQL query and YOU MUST execute it using the available tools, then summarise the results. 
+    You are an intelligent agent designed to interact with the SQL northwind database. Your goal is to understand the user's question, generate an SQL query and YOU MUST execute it using the available tools, then summarise the results. 
     
     IMPORTANT WORKFLOW - Follow these steps in order:
 
     1. **DISCOVER AVAILABLE TABLES**: 
-   - First, use the available table listing tools to see what tables exist in the relevant database
+   - First, use the available table listing tools to see what tables exist in the northwind database
    - This will show you the actual table names (never guess table names)
 
     2. **UNDERSTAND TABLE STRUCTURE**: 
@@ -51,24 +63,21 @@ async def create_agent_with_toolset(context):
 
     4. **EXECUTE THE QUERY**: 
     - Use the appropriate database tools to execute your queries
-    - Return actual data results, not just SQL code
+    - Return actual data results summarised for the user, not just SQL code
     
     QUERY GUIDELINES:
     - Always discover the schema first - never guess table or column names
-    - Limit results to 10 unless explicitly asked for more
+    - Limit results to 10 unless explicitly asked for more (e.g. when the user uses all or every)
     - Use proper SQL syntax with correct table and column names
     - Focus only on columns relevant to the user's question
-    - Choose the appropriate database based on the user's question context
 
-    PROCESS FOR ANSWERING QUESTIONS:
-    1. Determine which database(s) the question relates to (retail, claims, or both)
-    2. Discover what tables are available in the relevant database(s)
-    3. Get the schema for tables that seem relevant to the question
-    4. Generate SQL using the exact names you discovered
-    5. Execute the query using the appropriate database tools
-    6. Summarize the results for the user
+    CRITICAL: When displaying numerical values from database results:
+    - Display the EXACT number returned by the database tool
+    - Do NOT add any zeros, commas, or formatting
+    - Do NOT convert between cents and dollars
+    - Double-check your SQL results before presenting them to the user
 
-    If you cannot find relevant tables or if the question is unrelated to retail or claims data, respond with "I can only answer questions related to Claims or Retail data."
+    If you cannot find relevant tables or if the question is unrelated to northwind data, respond with "I can only answer questions related to Northwind data."
 
     Remember: The tools available to you will help you discover table names, get table schemas, and execute queries. Use them systematically to ensure accurate results.
     """
@@ -88,15 +97,12 @@ async def handle_question(question: str, context: str = 'all'):
     
     Args:
         question: User's question
-        context: Database context ('retail', 'claims', or 'all')
+        context: Database context ('northwind')
     """
     # Create agent with specific toolset
     agent, toolbox_client = await create_agent_with_toolset(context)
     
     try:
-        # Create runner and session
-        session_service = InMemorySessionService()
-        artifact_service = InMemoryArtifactService()
         runner = Runner(
             app_name="data_agent",
             agent=agent,
@@ -104,7 +110,6 @@ async def handle_question(question: str, context: str = 'all'):
             session_service=session_service
         )
         
-        # Run the agent
         session = await session_service.create_session(app_name='data_agent', user_id='123')
         content = types.Content(role='user', parts=[types.Part(text=question)])
         response_generator = runner.run_async(
@@ -113,47 +118,36 @@ async def handle_question(question: str, context: str = 'all'):
             new_message=content
         )
         
-        # Check if it's an async generator
+        # Process events and extract final response
+        response_text = "No response received."
+        
         if hasattr(response_generator, '__aiter__'):
-            # It's an async generator, collect all responses
-            responses = []
-            async for response_chunk in response_generator:
-                responses.append(response_chunk)
-                print(f"Response chunk: {response_chunk}")
-            return responses
+            async for event in response_generator:
+                if event.is_final_response():
+                    response_text = event.content.parts[0].text
+                    break
         else:
-            # It's a regular awaitable
-            response = await response_generator
-            print(f"Full response: {response}")
-            return response
+            # Handle non-async generator case
+            events = await response_generator
+            for event in events:
+                if event.is_final_response():
+                    response_text = event.content.parts[0].text
+                    break
+        
+        return response_text
+        
     finally:
-        # Clean up the toolbox client
         if hasattr(toolbox_client, 'close'):
             toolbox_client.close()
-        elif hasattr(toolbox_client, 'cleanup'):
-            toolbox_client.cleanup()
 
-
-async def main():
-    try: 
-        # Test a simple question
-        print("\nTesting with a claims question...")
-        question = "Which approved claim was the most expensive? Give a report of who was involved, the policies and all relevant infomation related to the claim."
-        response = await handle_question(question, context='all')
-        print(f"\n=== FINAL RESPONSE ===")
-        if isinstance(response, list):
-            for i, chunk in enumerate(response):
-                print(f"Chunk {i}: {chunk}")
-        else:
-            print(f"Response: {response}")
-        print("=" * 50)
-        
+@app.post("/query")
+async def query_database(request: QueryRequest):
+    try:
+        response_text = await handle_question(request.question, request.context)
+        return {"response": response_text}
     except Exception as e:
-        print(f"Error: {e}")
-        import traceback
-        traceback.print_exc()
-
+        return {"error": str(e)}
 
 if __name__ == "__main__":
-    import asyncio
-    asyncio.run(main())
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8001)
