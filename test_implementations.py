@@ -293,6 +293,14 @@ async def main():
     #     headers={"Content-Type": "application/json"},
     #     timeout=300
     # )
+
+    agent_config = AgentConfig(
+        name="MCP-Toolbox SQL Agent",
+        base_url="http://localhost:8001",
+        endpoint="/query",
+        headers={"Content-Type": "application/json"},
+        timeout=300
+    )
     
     # Initialize tester
     tester = SQLAgentTester(evaluator_client, agent_config)
@@ -308,7 +316,7 @@ async def main():
     print(report)
     
     # Save report to file
-    with open("test_report.txt", "w") as f:
+    with open("test_report_mcp.txt", "w") as f:
         f.write(report)
 
 if __name__ == "__main__":

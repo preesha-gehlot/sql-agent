@@ -1,0 +1,57 @@
+
+            SQL Agent Test Report
+            =====================
+            Agent: Langchain Zero-Shot SQL Agent
+            Endpoint: http://localhost:9000//agent/ask
+
+            Summary:
+            - Total Tests: 7
+            - Passed: 6 (85.7%)
+            - Failed: 1 (14.3%)
+            - Errors: 0 (0.0%)
+            - Average Execution Time: 11.21s
+
+            Detailed Results:
+            
+                ✓ test_001 (8.02s)
+                Query: Give the name of the employee that is CEO of the company.
+                Ground Truth: Sara Davis.
+                Agent Response: The employee who is the CEO of the company is Sara Davis.
+                Evaluation: Both answers refer to the same person, Sara Davis. The agent answer provides additional information that Sara Davis is the CEO of the company, but it does not contradict the ground truth answer.
+            
+                ✓ test_002 (8.53s)
+                Query: Who is the CEO of the company
+                Ground Truth: Sara Davis.
+                Agent Response: The CEO of the company is Sara Davis.
+                Evaluation: Both answers refer to the same person, Sara Davis. The agent answer provides additional information that Sara Davis is the CEO of the company, but it does not contradict the ground truth answer.
+            
+                ✓ test_003 (12.03s)
+                Query: Which employee handled order 10248
+                Ground Truth: Sven Buck
+                Agent Response: The employee who handled order 10248 is Sven Buck.
+                Evaluation: Both answers indicate that the individual who handled order 10248 is Sven Buck, though phrased differently.
+            
+                ✓ test_004 (12.03s)
+                Query: Give the names of products that were ordered as part of order 10248
+                Ground Truth: The products are Product QMVUN, Product RJVNM and Product GEEOO
+                Agent Response: The names of the products ordered as part of order 10248 are "Product QMVUN," "Product RJVNM," and "Product GEEOO."
+                Evaluation: Both answers list the same products: Product QMVUN, Product RJVNM, and Product GEEOO. The agent answer provides additional context by specifying these are part of order 10248, but this does not change the semantic consistency.
+            
+                ✓ test_005 (11.84s)
+                Query: Give the category name and supplier company name for the product with id 11
+                Ground Truth: Product with id 11 has category name 'Dairy Products' and supplier company name 'Supplier EQPNC'
+                Agent Response: The category name for the product with ID 11 is "Dairy Products," and its supplier company name is "Supplier EQPNC."
+                Evaluation: Both answers convey the same information, stating that the product with ID 11 belongs to the category 'Dairy Products' and is supplied by the company 'Supplier EQPNC'. The difference in phrasing does not change the semantic meaning.
+            
+                ✗ test_006 (11.49s)
+                Query: Give the customer name, employee name and shipping company name of order with id 10249
+                Ground Truth: For the order with id 10249 the customer name is Customer FAPSM, the employee name is Paul Suurs and the shipping company name is Shipper GVSUA
+                Agent Response: For order ID 10249, the customer name is Jim Wickham, the employee name is Paul Suurs, and the shipping company name is Shipper GVSUA.
+                Evaluation: While both answers agree on the order ID, the employee name, and the shipping company name, they provide different customer names. The ground truth answer states the customer name as 'Customer FAPSM', while the agent answer states it as 'Jim Wickham'. Therefore, the answers are not semantically consistent.
+            
+                ✓ test_007 (14.56s)
+                Query: Show me a summary for employee with id 8 including their name, which territories and which regions they manage, and how many unique customers they've served
+                Ground Truth: The employee with id 8 is Maria Cameron manages 4 territories (Beachwood, Findlay, Philadelphia, Racine) in the Northern region and has served 56 unique customers
+                Agent Response: The employee with ID 8 is Maria Cameron. She manages the territories Beachwood, Findlay, Philadelphia, and Racine, which are in the Northern region. She has served 56 unique customers.
+                Evaluation: Both answers provide the same information about the employee with ID 8, Maria Cameron, who manages four territories in the Northern region and has served 56 unique customers.
+            

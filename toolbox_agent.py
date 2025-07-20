@@ -1,5 +1,5 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
+from fastapi import FastAPI, Query
+from request_models import QueryRequest
 from typing import Optional
 
 from google.adk.agents import Agent
@@ -25,10 +25,6 @@ app = FastAPI()
 session_service = InMemorySessionService()
 artifact_service = InMemoryArtifactService()
 
-class QueryRequest(BaseModel):
-    question: str
-    context: Optional[str] = "all"
-
 async def create_agent_with_toolset(context):
     toolset_mapping = {
         'northwind': 'northwind_db_tools'
@@ -43,7 +39,9 @@ async def create_agent_with_toolset(context):
     toolset = toolbox.load_toolset(toolset_name)
 
     prompt = """
-    You are an intelligent agent designed to interact with the SQL northwind database. Your goal is to understand the user's question, generate an SQL query and YOU MUST execute it using the available tools, then summarise the results. 
+    You are an intelligent agent with access to the Northwind database (this contains information on the company's customers, orders, products, suppliers, employees, categories, order details, and shipping records). 
+    
+    Your goal is to understand the user's question, generate an SQL query and YOU MUST execute it using the available tools, then summarise the results. 
     
     IMPORTANT WORKFLOW - Follow these steps in order:
 
@@ -77,7 +75,7 @@ async def create_agent_with_toolset(context):
     - Do NOT convert between cents and dollars
     - Double-check your SQL results before presenting them to the user
 
-    If you cannot find relevant tables or if the question is unrelated to northwind data, respond with "I can only answer questions related to Northwind data."
+    ONLY IF the question is unrelated to northwind data, respond with "I can only answer questions related to Northwind data."
 
     Remember: The tools available to you will help you discover table names, get table schemas, and execute queries. Use them systematically to ensure accurate results.
     """
@@ -91,7 +89,7 @@ async def create_agent_with_toolset(context):
     )
     return agent, toolbox
 
-async def handle_question(question: str, context: str = 'all'):
+async def handle_question(question: str, context: str = 'northwind'):
     """
     Handle a user question with the specified database context.
     
@@ -141,10 +139,10 @@ async def handle_question(question: str, context: str = 'all'):
             toolbox_client.close()
 
 @app.post("/query")
-async def query_database(request: QueryRequest):
+async def query_database(request: QueryRequest, context: str = Query(...)):
     try:
-        response_text = await handle_question(request.question, request.context)
-        return {"response": response_text}
+        response_text = await handle_question(request.query, context)
+        return {"response": {"input": request.query, "output": response_text}}
     except Exception as e:
         return {"error": str(e)}
 
