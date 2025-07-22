@@ -5,67 +5,197 @@
             Endpoint: http://localhost:8001//query
 
             Summary:
-            - Total Tests: 7
-            - Passed: 6 (85.7%)
-            - Failed: 1 (14.3%)
+            - Total Tests: 20
+            - Passed: 18 (90.0%)
+            - Failed: 2 (10.0%)
             - Errors: 0 (0.0%)
-            - Average Execution Time: 10.19s
+            - Average Execution Time: 10.50s
 
             Detailed Results:
             
-                ✓ test_001 (8.78s)
+                ✓ test_001 (19.82s)
                 Query: Give the name of the employee that is CEO of the company.
                 Ground Truth: Sara Davis.
                 Agent Response: The CEO of the company is Sara Davis.
-                Evaluation: Both answers refer to the same person, Sara Davis. The agent answer provides additional information that Sara Davis is the CEO of the company, but it doesn't contradict the ground truth answer.
+                Evaluation: Both answers refer to the same person, Sara Davis. The agent answer provides additional information that Sara Davis is the CEO of the company, but it does not contradict the ground truth answer.
             
-                ✗ test_002 (5.95s)
+                ✗ test_002 (4.11s)
                 Query: Who is the CEO of the company
                 Ground Truth: Sara Davis.
                 Agent Response: I can only answer questions related to Northwind data.
-                Evaluation: The ground truth answer provides a specific name, 'Sara Davis', while the agent's answer does not provide any specific information related to the ground truth. Instead, it mentions a limitation in its ability to answer questions, which is not related to the ground truth answer.
+                Evaluation: The ground truth answer provides a specific name, 'Sara Davis', while the agent answer does not provide any specific information related to the ground truth. Instead, it states a limitation in its ability to answer questions.
             
-                ✓ test_003 (7.20s)
+                ✓ test_003 (7.99s)
                 Query: Which employee handled order 10248
                 Ground Truth: Sven Buck
                 Agent Response: The employee who handled order 10248 is Sven Buck.
-                Evaluation: Both answers indicate that the individual who handled order 10248 is Sven Buck, though phrased differently.
+                Evaluation: Both answers indicate that the person in question is Sven Buck. The agent answer provides additional context, stating that Sven Buck is the employee who handled order 10248, but this does not change the semantic meaning.
             
-                ✓ test_004 (8.81s)
+                ✓ test_004 (8.27s)
                 Query: Give the names of products that were ordered as part of order 10248
                 Ground Truth: The products are Product QMVUN, Product RJVNM and Product GEEOO
-                Agent Response: The products that were ordered as part of order 10248 are:
+                Agent Response: The products ordered as part of order 10248 are:
 
 1. Product QMVUN
 2. Product RJVNM
 3. Product GEEOO
-                Evaluation: Both answers list the same three products: Product QMVUN, Product RJVNM, and Product GEEOO. The agent answer provides additional context by specifying these products were part of order 10248, but this does not change the semantic consistency between the two answers.
+                Evaluation: Both answers list the same three products: Product QMVUN, Product RJVNM, and Product GEEOO. The agent answer provides additional context that these products are part of order 10248, but this does not change the semantic consistency between the two answers.
             
-                ✓ test_005 (13.98s)
+                ✓ test_005 (10.25s)
                 Query: Give the category name and supplier company name for the product with id 11
                 Ground Truth: Product with id 11 has category name 'Dairy Products' and supplier company name 'Supplier EQPNC'
                 Agent Response: The product with ID 11 belongs to the category "Dairy Products" and is supplied by the company "Supplier EQPNC".
-                Evaluation: Both answers convey the same information that the product with ID 11 is categorized as 'Dairy Products' and is supplied by the company 'Supplier EQPNC'. The phrasing is different but the semantic meaning is the same.
+                Evaluation: Both answers convey the same information that the product with ID 11 is in the category 'Dairy Products' and is supplied by the company 'Supplier EQPNC'. The difference in phrasing does not change the semantic meaning.
             
-                ✓ test_006 (11.85s)
-                Query: Give the customer name, employee name and shipping company name of order with id 10249
-                Ground Truth: For the order with id 10249 the customer name is Customer FAPSM, the employee name is Paul Suurs and the shipping company name is Shipper GVSUA
-                Agent Response: For the order with ID 10249, the details are as follows:
-- **Customer Name**: Customer FAPSM
-- **Employee Name**: Paul Suurs
-- **Shipping Company Name**: Shipper GVSUA
-                Evaluation: Both answers provide the same information about the order with ID 10249. They both state that the customer name is Customer FAPSM, the employee name is Paul Suurs, and the shipping company name is Shipper GVSUA. The difference in formatting and phrasing does not change the semantic meaning of the answers.
+                ✓ test_006 (10.57s)
+                Query: Give the customer contact name, employee name and shipping company name of order with id 10249
+                Ground Truth: For the order with id 10249 the customer contact name is Jim Wickham, the employee name is Paul Suurs and the shipping company name is Shipper GVSUA
+                Agent Response: For the order with ID 10249, the customer contact name is Jim Wickham, the employee name is Paul Suurs, and the shipping company name is Shipper GVSUA.
+                Evaluation: Both answers provide the same information about the order with ID 10249, including the customer contact name (Jim Wickham), the employee name (Paul Suurs), and the shipping company name (Shipper GVSUA). The differences in phrasing and formatting do not affect the semantic consistency.
             
-                ✓ test_007 (14.79s)
+                ✓ test_007 (9.80s)
                 Query: Show me a summary for employee with id 8 including their name, which territories and which regions they manage, and how many unique customers they've served
                 Ground Truth: The employee with id 8 is Maria Cameron manages 4 territories (Beachwood, Findlay, Philadelphia, Racine) in the Northern region and has served 56 unique customers
-                Agent Response: Employee **Maria Cameron** (ID: 8) manages territories in the Northern region. Here are the specific territories she manages:
+                Agent Response: Here is a summary for employee with ID 8:
 
-- **Beachwood**
-- **Findlay**
-- **Philadelphia**
-- **Racine**
+- **Name**: Maria Cameron
+- **Territories Managed**: Beachwood, Findlay, Philadelphia, Racine
+- **Regions Managed**: Northern
+- **Unique Customers Served**: 56
+                Evaluation: Both answers provide the same information about the employee with ID 8, Maria Cameron, who manages 4 territories in the Northern region and has served 56 unique customers. The information is presented differently but the semantic meaning is the same.
+            
+                ✓ test_008 (17.22s)
+                Query: Give the name of all employees that were hired in 2004
+                Ground Truth: The employees hired in 2004 were Russell King, Maria Cameron, Zoya Dolgpyatova
+                Agent Response: The employees who were hired in 2004 are:
 
-Maria has served a total of 56 unique customers.
-                Evaluation: Both answers provide the same information about the employee Maria Cameron with ID 8, who manages four territories (Beachwood, Findlay, Philadelphia, Racine) in the Northern region and has served 56 unique customers.
+1. Russell King
+2. Maria Cameron
+3. Zoya Dolgopyatova
+                Evaluation: Both answers list the same employees (Russell King, Maria Cameron, Zoya Dolgpyatova) as being hired in 2004. The difference in formatting and phrasing does not change the semantic meaning.
+            
+                ✗ test_009 (11.41s)
+                Query: What is the total revenue generated by product ID 11?
+                Ground Truth: The total revenue generated by the product with ID 11 is approximately 12901.77
+                Agent Response: The total revenue generated by product ID 11 is 129017.77.
+                Evaluation: Although both answers are referring to the total revenue generated by the product with ID 11, the numerical values provided are different. The Ground Truth Answer states the revenue as 12901.77, while the Agent Answer states it as 129017.77. This is a significant discrepancy and not a minor formatting difference.
+            
+                ✓ test_010 (10.43s)
+                Query: Find the sum of all revenue generated by product ID 11, where revenue equals unit price times quantity sold minus any applicable discounts.
+                Ground Truth: The total revenue generated by the product with ID 11 is approximately 12901.77.
+                Agent Response: The total revenue generated by product ID 11 is 12901.77 (using revenue calculation as unit price times quantity sold minus any applicable discounts).
+                Evaluation: Both answers indicate the same total revenue figure of 12901.77 for the product with ID 11, although they are phrased differently. The agent answer also provides additional information on how the revenue was calculated, which does not contradict the ground truth answer.
+            
+                ✓ test_011 (10.12s)
+                Query: What is the average unit price of products in the Dairy Products category?
+                Ground Truth: The average unit price of products in the 'Dairy Products' category is approximately 28.73.
+                Agent Response: The average unit price of products in the "Dairy Products" category is approximately 28.73.
+                Evaluation: Both answers convey the same information, stating that the average unit price of products in the 'Dairy Products' category is approximately 28.73. The difference in quotation marks used does not change the semantic meaning.
+            
+                ✓ test_012 (9.82s)
+                Query: Give the name(s) of the suppliers that provide the most amount of products
+                Ground Truth: The two suppliers that provide the most amount of product are  Supplier GQRCV and Supplier SVIYA
+                Agent Response: The suppliers that provide the most amount of products are:
+
+1. **Supplier GQRCV** with 5 products
+2. **Supplier SVIYA** with 5 products
+3. **Supplier VHQZD** with 4 products
+4. **Supplier BWGYE** with 4 products
+
+These suppliers are top in terms of the number of products supplied.
+                Evaluation: Both answers indicate that Supplier GQRCV and Supplier SVIYA provide the most amount of products. Although the agent answer includes additional suppliers, it does not contradict the ground truth answer.
+            
+                ✓ test_013 (8.96s)
+                Query: Which products have never been ordered?
+                Ground Truth: There are no products that have never been ordered.
+                Agent Response: There are no products in the database that have never been ordered. All products have been ordered at least once.
+                Evaluation: Both answers convey the same information that there are no products in the database that have never been ordered. The agent answer further clarifies this by stating that all products have been ordered at least once, which is consistent with the ground truth answer.
+            
+                ✓ test_014 (13.61s)
+                Query: Find the top 5 customers by total order value, where order value equals unit price times quantity sold minus any applicable discounts for each product in the order.
+                Ground Truth: The top 5 customers by total order value are: Customer IRRVL, Customer THHDP, Customer LCOUJ, Customer NYUHS and Customer FRXZL.
+                Agent Response: Here are the top 5 customers by total order value:
+
+1. **Customer IRRVL** - Total Order Value: 110277.3050
+2. **Customer THHDP** - Total Order Value: 104874.9785
+3. **Customer LCOUJ** - Total Order Value: 104361.9500
+4. **Customer NYUHS** - Total Order Value: 51097.8005
+5. **Customer FRXZL** - Total Order Value: 49979.9050
+
+These values represent the total order value calculated as the sum of (unit price * quantity * (1 - discount)) for each product in their orders.
+                Evaluation: Both answers are consistent as they list the same top 5 customers by total order value. The agent answer provides additional details about the total order value for each customer, but the core information is the same in both answers.
+            
+                ✓ test_015 (6.80s)
+                Query: How many orders were placed in September 2006 with freight costs between 0 and 2.
+                Ground Truth: There were 5 orders placed in September 2006 with freight costs between 0 and 2.
+                Agent Response: In September 2006, there were 5 orders placed with freight costs between 0 and 2.
+                Evaluation: Both answers convey the same information that there were 5 orders placed in September 2006 with freight costs between 0 and 2, despite the difference in sentence structure.
+            
+                ✓ test_016 (9.35s)
+                Query: Which employees have 'Sales' in their title?
+                Ground Truth: Don Funk, Judy Lew, Yael Peled, Sven Buck, Paul Suurs, Russell King, Maria Cameron and Zoya Dolgopyatova are the employees that have sales in their title.
+                Agent Response: Here are the employees with 'Sales' in their title:
+
+1. Don Funk - Vice President, Sales
+2. Judy Lew - Sales Manager
+3. Yael Peled - Sales Representative
+4. Sven Buck - Sales Manager
+5. Paul Suurs - Sales Representative
+6. Russell King - Sales Representative
+7. Maria Cameron - Sales Representative
+8. Zoya Dolgopyatova - Sales Representative
+
+These individuals hold various roles within the sales department.
+                Evaluation: Both answers list the same employees as having 'sales' in their title. The agent answer provides additional information about the specific roles of each employee within the sales department, but this does not contradict the ground truth answer.
+            
+                ✓ test_017 (13.53s)
+                Query: What's the most expensive product in each category? Give the category name, product name and unit price for each instance.
+                Ground Truth: The most expensive product in each category is Product QDOMO from Beverages at 263.50, Product ICKNK from Condiments at 43.90, Product QHFFP from Confections at 81.00, Product UKXRI from Dairy Products at 55.00, Product VKCMF from Grains/Cereals at 38.00, Product VJXYN from Meat/Poultry at 123.79, Product APITJ from Produce at 53.00, and Product CKEDC from Seafood at 62.50.
+                Agent Response: Here are the most expensive products in each category, along with their unit prices:
+
+1. **Beverages**: Product QDOMO, Unit Price: 263.50
+2. **Condiments**: Product ICKNK, Unit Price: 43.90
+3. **Confections**: Product QHFFP, Unit Price: 81.00
+4. **Dairy Products**: Product UKXRI, Unit Price: 55.00
+5. **Grains/Cereals**: Product VKCMF, Unit Price: 38.00
+6. **Meat/Poultry**: Product VJXYN, Unit Price: 123.79
+7. **Produce**: Product APITJ, Unit Price: 53.00
+8. **Seafood**: Product CKEDC, Unit Price: 62.50
+                Evaluation: Both answers provide the same information about the most expensive product in each category, including the product codes and their respective prices. The difference in formatting and presentation does not affect the semantic consistency.
+            
+                ✓ test_018 (11.59s)
+                Query: Find customers who have placed more than 20 orders.
+                Ground Truth: The customers with more than 20 orders are: Customer THHDP, Customer IRRVL, Customer LCOUJ
+                Agent Response: Here are the customers who have placed more than 20 orders:
+
+1. Customer THHDP - 30 orders
+2. Customer IRRVL - 28 orders
+3. Customer LCOUJ - 31 orders
+                Evaluation: Both answers list the same customers (THHDP, IRRVL, LCOUJ) as having more than 20 orders. The agent answer also provides additional information about the exact number of orders for each customer, but this does not contradict the ground truth answer.
+            
+                ✓ test_019 (9.43s)
+                Query: Show monthly sales revenue totals for 2008, ordered by month, where revenue equals unit price times quantity sold minus any applicable discounts.
+                Ground Truth: The monthly sales revenue totals for 2008 ordered by month January at approximately 94222, February at approximately 99415, March at approximately 104854, April at approximately 123799, and May at approximately 18334.
+                Agent Response: Here are the monthly sales revenue totals for 2008:
+
+- January 2008: 94222.1105
+- February 2008: 99415.2875
+- March 2008: 104854.155
+- April 2008: 123798.6825
+- May 2008: 18333.6305
+                Evaluation: Both answers provide the same monthly sales revenue totals for 2008, with the same values for each month. The formatting and presentation of the data is different, but the semantic meaning is the same.
+            
+                ✓ test_020 (6.92s)
+                Query: Show me the company names of all customers from Switzerland or Spain, who don't have a region specified.
+                Ground Truth: The company names of customers from Switzerland or Spain, who don't have a region specified, are: Customer QUHWH, Customer WNMAF, Customer DTDMN, Customer MDLWA, Customer KSLQF, Customer CCKOT, Customer SIUIH.
+                Agent Response: Here are the company names of customers from Switzerland or Spain who do not have a region specified:
+
+1. Customer QUHWH
+2. Customer WNMAF
+3. Customer DTDMN
+4. Customer MDLWA
+5. Customer KSLQF
+6. Customer CCKOT
+7. Customer SIUIH
+                Evaluation: Both answers list the same company names of customers from Switzerland or Spain who do not have a region specified. The difference in formatting does not affect the semantic consistency.
             

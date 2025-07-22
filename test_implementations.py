@@ -278,13 +278,13 @@ async def main():
     evaluator_client = openai.OpenAI(api_key="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")
     
     # Configure the agent to test
-    # agent_config = AgentConfig(
-    #     name="Langchain Zero-Shot SQL Agent",
-    #     base_url="http://localhost:9000",
-    #     endpoint="/agent/ask",
-    #     headers={"Content-Type": "application/json"},
-    #     timeout=300
-    # )
+    agent_config = AgentConfig(
+        name="Langchain Zero-Shot SQL Agent",
+        base_url="http://localhost:9000",
+        endpoint="/agent/ask",
+        headers={"Content-Type": "application/json"},
+        timeout=300
+    )
 
     # agent_config = AgentConfig(
     #     name="Langchain Few-Shot SQL Agent",
@@ -294,13 +294,13 @@ async def main():
     #     timeout=300
     # )
 
-    agent_config = AgentConfig(
-        name="MCP-Toolbox SQL Agent",
-        base_url="http://localhost:8001",
-        endpoint="/query",
-        headers={"Content-Type": "application/json"},
-        timeout=300
-    )
+    # agent_config = AgentConfig(
+    #     name="MCP-Toolbox SQL Agent",
+    #     base_url="http://localhost:8001",
+    #     endpoint="/query",
+    #     headers={"Content-Type": "application/json"},
+    #     timeout=300
+    # )
     
     # Initialize tester
     tester = SQLAgentTester(evaluator_client, agent_config)
@@ -316,7 +316,7 @@ async def main():
     print(report)
     
     # Save report to file
-    with open("test_report_mcp.txt", "w") as f:
+    with open("test_report_zero_shot.txt", "w") as f:
         f.write(report)
 
 if __name__ == "__main__":

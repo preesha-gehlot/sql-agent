@@ -1,0 +1,9 @@
+fastapi==0.116.0
+langchain-community==0.3.27
+langchain-ollama==0.3.4
+langchain-openai==0.3.27
+langchain-core==0.3.68
+uvicorn==0.35.0
+google-adk==1.6.1
+google-genai==1.25.0
+toolbox-core==0.3.0
