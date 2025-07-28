@@ -8,8 +8,6 @@ import uvicorn
 import os
 
 # Set Ollama host to remote IP
-# os.environ["OLLAMA_BASE_URL"] = "https://34.142.79.93:11434"
-os.environ["OPENAI_API_KEY"] = "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"
 
 # Define database URIs
 DATABASES = {

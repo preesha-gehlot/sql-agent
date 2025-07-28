@@ -11,10 +11,6 @@ from google.genai import types
 from toolbox_core import ToolboxSyncClient
 
 import os
-# TODO(developer): replace this with your Google API key
-os.environ['GOOGLE_API_KEY'] = "AIzaSyBaAbvY7Ybo_-mA20xrMhrncLXPHqlZpl4"
-os.environ["OPENAI_API_KEY"] = "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"  # For OpenAI models
-
 # Define model constants for cleaner code
 MODEL_GEMINI_PRO = "gemini-2.5-pro"
 MODEL_GPT_4O = "openai/gpt-4o"
